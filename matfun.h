@@ -107,15 +107,20 @@ void scalma(long double x,long double **a, long double **b)
 
 void display_quad(quadfloat **x)
 {
-	int i,j,n=9;
-	/*
-    for (i = 0;i < n;i++) {
-    	for (j = 0;j < n;j++)
-    		dot<<setw(22)<<x[i][j];
-    	dot<<endl;
-   	}
-	*/
-   	cout<<endl;
+	int i, j, n = 9;
+	char tmp_buff[STR_SIZE];
+	memset(tmp_buff, 0, sizeof(tmp_buff));
+
+	for (i = 0;i < n;i++) {
+	 	for (j = 0;j < n;j++) {
+			quadmath_snprintf(tmp_buff, sizeof(tmp_buff), "%.22Qe", x[i][j]);
+			//dot << setw(22) << x[i][j];
+			dot << tmp_buff;
+		}
+		dot<<endl;
+	}
+
+	cout<<endl;
 }
 
 void cholesky_quad(quadfloat **a, quadfloat **b)
@@ -180,6 +185,9 @@ void cholesky_quad(quadfloat **a, quadfloat **b)
 	display_quad(b);
 
 //  Check
+#ifdef OMP
+#pragma omp parallel for collapse(2) shared(a, b, e) private(s)
+#endif
 	for (i = 0; i < n; i++)
 		for (j = 0; j < n; j++)  {
 			s = 0.;
@@ -194,6 +202,9 @@ void cholesky_quad(quadfloat **a, quadfloat **b)
 void scalma_quad(quadfloat x,quadfloat **a, quadfloat **b)
 {
 	int i, j, n = MATR_DIM;
+#ifdef OMP
+#pragma omp parallel for collapse(2) shared(a, b, x)
+#endif
 	for (i = 0; i < n; i++)
 		for (j = 0; j < n; j++)
 			b[i][j] = x * a[i][j];

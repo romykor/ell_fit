@@ -18,7 +18,7 @@ int main()
 	unsigned long i;
 	const quadfloat one = 1.000000000000000000000000000000000000000000;
 	//const quadfloat one = expq(0); /* Maybe this is closer, who knows :P */
-	quadfloat x,y,z,sR,s0;
+	quadfloat x, y, z, sR, s0;
 	quadfloat U[MATR_DIM], C[MATR_DIM];
 	quadfloat **N, **Niv, **Vx;
 	quadfloat *tmp_qf[3];
@@ -64,8 +64,6 @@ int main()
 	if (!dat.is_open())
 		return 1;
 
-	t1 = clock();
-
 	// Phase 1  -  Data input  -  Big simple loop
 	char x_s[STR_SIZE], y_s[STR_SIZE], z_s[STR_SIZE];
 	memset(x_s, 0, STR_SIZE * sizeof(char));
@@ -92,11 +90,16 @@ int main()
 	//
 	dat.close();
 
+	t1 = clock();
+
 	// Phase 2  -  Evaluation of normal symmetric matrix N
 	for (k = 0; k < MATR_DIM; k++) {
 		U[k] = 0.;
 		for (m = k; m < MATR_DIM; m++)  {
 			N[k][m] = 0.;
+#ifdef OMP
+#pragma omp parallel for shared(k, m) reduction(+:N[k][m], U[k])
+#endif
 			for (i = 1; i <= n; i++) {		//  again big loop
 				N[k][m] += a[i][k]*a[i][m];
 				if (m == k)
@@ -145,17 +148,22 @@ int main()
 	res<<fixed<<setprecision(4)<<"\n Computing time : "<<float(t2)/cps<<" seconds \n";
 	res<<scientific<<setprecision(14);
 	res<<"\n Polynomial coefficients of ellipsoid"<<endl;
-	for (m = 0; m < MATR_DIM; m++)
-		res<<"\n C["<<m<<"] = "<<setw(25)<<C[m];
+	for (m = 0; m < MATR_DIM; m++) {
+		quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", C[m]);
+		res<<"\n C["<<m<<"] = "<<setw(25)<<x_s;
+	}
 
     res<<"\n\n Variance-covariance matrix Vx(upper triangular)"<<endl;
-    for (k = 0;k < MATR_DIM; k++) {
-    	for (m = k; m < MATR_DIM; m++)
-    		res<<setw(26)<<Vx[k][m];
-    	res<<endl;
-   	}
+	for (k = 0;k < MATR_DIM; k++) {
+		for (m = k; m < MATR_DIM; m++) {
+			quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", Vx[k][m]);
+			res<<setw(26)<<x_s;
+		}
+		res<<endl;
+	}
 
-	res<<"\n\n A-posteriori error:  s0 = "<<setw(25)<<s0<<endl;
+	quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", s0);
+	res<<"\n\n A-posteriori error:  s0 = "<<setw(25)<<x_s<<endl;
 
 	return 0;
 }
