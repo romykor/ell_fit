@@ -21,6 +21,7 @@ int main()
 	quadfloat x, y, z, sR, s0;
 	quadfloat U[MATR_DIM], C[MATR_DIM];
 	quadfloat **N, **Niv, **Vx;
+	quadfloat n_km, u_k; /* helper variables to be used (for safety) in OMP implementation instead of N[m][k] and U[k] respectively */
 	quadfloat *tmp_qf[3];
 	N 	= (quadfloat **)calloc(MATR_DIM, sizeof(quadfloat *));
 	Niv = (quadfloat **)calloc(MATR_DIM, sizeof(quadfloat *));
@@ -94,18 +95,20 @@ int main()
 
 	// Phase 2  -  Evaluation of normal symmetric matrix N
 	for (k = 0; k < MATR_DIM; k++) {
-		U[k] = 0.;
+		memset(&u_k, 0, sizeof(quadfloat));
 		for (m = k; m < MATR_DIM; m++)  {
-			N[k][m] = 0.;
+			memset(&n_km, 0, sizeof(quadfloat));
 #ifdef OMP
-#pragma omp parallel for shared(k, m) reduction(+:N[k][m], U[k])
+#pragma omp parallel for shared(k, m) reduction(+:n_km, u_k)
 #endif
 			for (i = 1; i <= n; i++) {		//  again big loop
-				N[k][m] += a[i][k]*a[i][m];
+				n_km += a[i][k]*a[i][m];
 				if (m == k)
-					U[k] += a[i][k]*d[i];
+					u_k += a[i][k]*d[i];
 			}
-			N[m][k] = N[k][m];
+			N[k][m] = n_km;
+			N[m][k] = n_km;
+			U[k] = u_k;
 		}
 	}
 
