@@ -41,10 +41,10 @@ void cholesky(long double a[MATR_DIM][MATR_DIM],long double b[MATR_DIM][MATR_DIM
 	dot<<"\n Matrix A \n";
 	display(a);
 
-    for (i = 0;i < n;i++)
-    	for (j = 0;j < n;j++)  {
-			c[i][j]=0.;
-			d[i][j]=0.;
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++)  {
+			c[i][j] = 0.;
+			d[i][j] = 0.;
 		}
 
 	for (i = 0;i < n;i++)  {
