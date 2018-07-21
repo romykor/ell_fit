@@ -120,75 +120,75 @@ void display_quad(quadfloat **x)
 
 void cholesky_quad(quadfloat **a, quadfloat **b)
 {
-    int i,j,n=MATR_DIM,k;
+    int i, j, n = MATR_DIM, k;
     quadfloat s;
-    quadfloat c[MATR_DIM][MATR_DIM],d[MATR_DIM][MATR_DIM],e[MATR_DIM][MATR_DIM];
+    quadfloat c[MATR_DIM][MATR_DIM], d[MATR_DIM][MATR_DIM], e[MATR_DIM][MATR_DIM];
 
-	dot<<scientific<<setprecision(12);
-	dot<<"\n Matrix A \n";
-	display(a);
+	dot << scientific << setprecision(12);
+	dot << "\n Matrix A \n";
+	display_quad(a);
 
     for (i = 0;i < n;i++)
     	for (j = 0;j < n;j++)  {
-			c[i][j]=0.;
-			d[i][j]=0.;
+			c[i][j] = 0.;
+			d[i][j] = 0.;
 		}
 
 	for (i = 0;i < n;i++)  {
-		s=0.;
+		s = 0.;
 		for (k = 0;k < i;k++)   // upper limit reduced
-			s=s+c[k][i]*c[k][i];
-		c[i][i]=sqrtq(a[i][i]-s);
-		for (j = i+1;j < n;j++)  {
-			s=0.;
-			for (k = 0;k < i;k++)
-				s=s+c[k][i]*c[k][j];
-			c[i][j]=(a[i][j]-s)/c[i][i];
-			c[j][i]=0.;
+			s = s + c[k][i] * c[k][i];
+		c[i][i] = sqrtq(a[i][i] - s);
+		for (j = i + 1; j < n; j++)  {
+			s = 0.;
+			for (k = 0; k < i; k++)
+				s = s + c[k][i] * c[k][j];
+			c[i][j] = (a[i][j] - s) / c[i][i];
+			c[j][i] = 0.;
 		}
 	}
 
-	for (i = 0;i < n;i++)
-		d[i][i]=1./c[i][i];
-	for (i = 0;i < n-1;i++)  {
-		for (j = i+1;j < n;j++)  {
-			s=0.;
-			for (k = i;k < j;k++)
-				s=s+d[i][k]*c[k][j];
-			d[i][j]=-d[j][j]*s;
-			d[j][i]=0.;
+	for (i = 0; i < n; i++)
+		d[i][i] = 1. / c[i][i]; /* XXX Add 'one' here? */
+	for (i = 0; i < n - 1; i++)  {
+		for (j = i + 1; j < n; j++)  {
+			s = 0.;
+			for (k = i; k < j; k++)
+				s = s + d[i][k] * c[k][j];
+			d[i][j] = -d[j][j] * s;
+			d[j][i] = 0.;
 		}
 	}
 
-	for (i = 0;i<n;i++)
-		for (j = i;j < n;j++)  {
-			s=0.;
-			for (k = j;k <n ;k++)
-				s=s+d[i][k]*d[j][k];
-			b[i][j]=s;
-			b[j][i]=b[i][j];
+	for (i = 0; i < n; i++)
+		for (j = i; j < n; j++)  {
+			s = 0.;
+			for (k = j; k < n ; k++)
+				s = s + d[i][k] * d[j][k];
+			b[i][j] = s;
+			b[j][i] = b[i][j];
 		}
 
 	dot<<"\n Matrix B = A^(-1) \n";
-	display(b);
+	display_quad(b);
 
 //  Check
-	for (i = 0;i < n;i++)
-		for (j = 0;j < n;j++)  {
-			s=0.;
-			for (k = 0;k < n;k++)
-				s=s+a[i][k]*b[k][j];
-			e[i][j]=s;
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++)  {
+			s = 0.;
+			for (k = 0; k < n; k++)
+				s = s + a[i][k] * b[k][j];
+			e[i][j] = s;
 	}
-	dot<<"\n Check!  A*B  (should be Unit matrix) \n";
-	display(e);
+	dot << "\n Check!  A*B  (should be Unit matrix) \n";
+	display_quad(e);
 }
 
 void scalma_quad(quadfloat x,quadfloat **a, quadfloat **b)
 {
-	int i,j,n=MATR_DIM;
-    for (i = 0;i < n;i++)
-    	for (j = 0;j < n;j++)
-    		b[i][j]=x*a[i][j];
+	int i, j, n = MATR_DIM;
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++)
+			b[i][j] = x * a[i][j];
 }
 

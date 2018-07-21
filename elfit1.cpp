@@ -1,9 +1,9 @@
-//
-//  Fit an ellipsoid to geoid undulation data
-//  using a grid of EGM2008 values
-//
-//  V. 1  -  17 July 2018
-//
+/*
+ *  Fit an ellipsoid to geoid undulation data
+ *  using a grid of EGM2008 values
+ *
+ *  V. 2  -  20 July 2018
+ */
 
 #include "matfun.h"
 
@@ -98,9 +98,9 @@ int main()
 		for (m = k; m < MATR_DIM; m++)  {
 			N[k][m] = 0.;
 			for (i = 1; i <= n; i++) {		//  again big loop
-				N[k][m] = N[k][m] + a[i][k]*a[i][m];
+				N[k][m] += a[i][k]*a[i][m];
 				if (m == k)
-					U[k] = U[k] + a[i][k]*d[i];
+					U[k] += a[i][k]*d[i];
 			}
 			N[m][k] = N[k][m];
 		}
