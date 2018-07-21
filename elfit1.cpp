@@ -16,7 +16,7 @@ int main()
 {
 	int k,m, cps = 0;
 	unsigned long i;
-	const quadfloat one=1.000000000000000000000000000000000000000000;
+	const quadfloat one = 1.000000000000000000000000000000000000000000;
 	//const quadfloat one = expq(0); /* Maybe this is closer, who knows :P */
 	quadfloat x,y,z,sR,s0;
 	quadfloat U[MATR_DIM], C[MATR_DIM];
