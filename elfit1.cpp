@@ -37,6 +37,9 @@ int main()
 
 	clock_t t1, t2;
 
+	memset(C, 0, MATR_DIM * sizeof(quadfloat));
+	memset(U, 0, MATR_DIM * sizeof(quadfloat));
+
 	double cof[9];
 	cof[0] = pow(10., 0);
 	cof[1] = pow(10., 0);
@@ -116,10 +119,12 @@ int main()
 	cholesky_quad(N, Niv);
 
 	// Phase 4  -  Evaluation of coefficient matrix C
+#ifdef OMP
+#pragma omp parallel for collapse(2)
+#endif
 	for (k = 0; k < MATR_DIM; k++)  {
-		C[k] = 0.;
 		for (m = 0; m < MATR_DIM; m++)
-			C[k] = C[k] + Niv[k][m]*U[m];
+			C[k] += Niv[k][m]*U[m];
 	}
 
 	ofstream res("elfit-res.txt");
@@ -128,12 +133,15 @@ int main()
 
 	res<<scientific<<setprecision(10);
 	// Phase 5  -  Evaluation of residuals
-	sR = 0.;
-	for (i = 1;i <= n;i++)  {		//  again big loop
+	memset(&sR, 0, sizeof(quadfloat));
+#ifdef OMP
+#pragma omp parallel for reduction(+:sR)
+#endif
+	for (i = 1; i <= n; i++)  {		//  again big loop
 		r[i] = -d[i];
 		for (m = 0; m < MATR_DIM; m++)
-			r[i] = r[i] + a[i][m]*C[m];
-		sR = sR + r[i]*r[i];
+			r[i] += a[i][m]*C[m];
+		sR += r[i]*r[i];
 	}
 
 	// Phase 6  -  Evaluation of variances
