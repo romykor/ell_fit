@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const unsigned long n = 7082;			// actual value may vary
+const unsigned long n = 64442;			// actual value may vary
 //quadfloat N[MATR_DIM][MATR_DIM],Niv[MATR_DIM][MATR_DIM],Vx[MATR_DIM][MATR_DIM];
 
 int main()
@@ -41,14 +41,14 @@ int main()
 	memset(U, 0, MATR_DIM * sizeof(quadfloat));
 
 	double cof[9];
-	cof[0] = pow(10., 0);
-	cof[1] = pow(10., 0);
-	cof[2] = pow(10., 0);
-	cof[3] = pow(10., 0);
-	cof[4] = pow(10., 0);
-	cof[5] = pow(10., 0);
-	cof[6] = pow(10., 0);
-	cof[7] = pow(10., 0);
+	cof[0] = pow(10., -8);
+	cof[1] = pow(10., -8);
+	cof[2] = pow(10., -6);
+	cof[3] = pow(10., -6);
+	cof[4] = pow(10., -6);
+	cof[5] = pow(10., -8);
+	cof[6] = pow(10., -8);
+	cof[7] = pow(10., -6);
 	cof[8] = pow(10., 0);
 	//quadfloat d[n+1],r[n+1],a[n+1][MATR_DIM];
 	// Define matrices with "malloc"
@@ -64,7 +64,7 @@ int main()
 		a[i] = &big_unified[i * MATR_DIM];
 
 //	ifstream dat("geocart.txt");
-	ifstream dat("geosphere.txt");
+	ifstream dat("geomod-t.txt");
 	if (!dat.is_open())
 		return 1;
 
@@ -124,7 +124,7 @@ int main()
 			C[k] += Niv[k][m]*U[m];
 	}
 
-	ofstream res("elfitq-sph.txt");
+	ofstream res("elf-geomod-t.txt");
 	if (!res.is_open())
 		return 2;
 
