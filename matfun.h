@@ -6,7 +6,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <quadmath.h>
+#ifdef OMP
 #include <omp.h>
+#endif
 
 #define MATR_DIM	9
 #define STR_SIZE	50
@@ -113,9 +115,9 @@ void display_quad(quadfloat **x)
 
 	for (i = 0;i < n;i++) {
 	 	for (j = 0;j < n;j++) {
-			quadmath_snprintf(tmp_buff, sizeof(tmp_buff), "%.22Qe", x[i][j]);
+			quadmath_snprintf(tmp_buff, sizeof(tmp_buff), "%.12Qe", x[i][j]);
 			//dot << setw(22) << x[i][j];
-			dot << tmp_buff;
+			dot << tmp_buff << "\t";
 		}
 		dot<<endl;
 	}

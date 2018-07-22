@@ -119,15 +119,12 @@ int main()
 	cholesky_quad(N, Niv);
 
 	// Phase 4  -  Evaluation of coefficient matrix C
-#ifdef OMP
-#pragma omp parallel for collapse(2)
-#endif
 	for (k = 0; k < MATR_DIM; k++)  {
 		for (m = 0; m < MATR_DIM; m++)
 			C[k] += Niv[k][m]*U[m];
 	}
 
-	ofstream res("elfit-res.txt");
+	ofstream res("elfitq-sph.txt");
 	if (!res.is_open())
 		return 2;
 
@@ -160,20 +157,20 @@ int main()
 	res<<scientific<<setprecision(14);
 	res<<"\n Polynomial coefficients of ellipsoid"<<endl;
 	for (m = 0; m < MATR_DIM; m++) {
-		quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", C[m]);
+		quadmath_snprintf(x_s, sizeof(x_s), "%.12Qe", C[m]);
 		res<<"\n C["<<m<<"] = "<<setw(25)<<x_s;
 	}
 
     res<<"\n\n Variance-covariance matrix Vx(upper triangular)"<<endl;
 	for (k = 0;k < MATR_DIM; k++) {
 		for (m = k; m < MATR_DIM; m++) {
-			quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", Vx[k][m]);
+			quadmath_snprintf(x_s, sizeof(x_s), "%.12Qe", Vx[k][m]);
 			res<<setw(26)<<x_s;
 		}
 		res<<endl;
 	}
 
-	quadmath_snprintf(x_s, sizeof(x_s), "%.22Qe", s0);
+	quadmath_snprintf(x_s, sizeof(x_s), "%.12Qe", s0);
 	res<<"\n\n A-posteriori error:  s0 = "<<setw(25)<<x_s<<endl;
 
 	return 0;
