@@ -9,12 +9,12 @@
 
 using namespace std;
 
-const unsigned long n = 64442;			// actual value may vary
+const unsigned long n = 7082;			// actual value may vary
 //quadfloat N[MATR_DIM][MATR_DIM],Niv[MATR_DIM][MATR_DIM],Vx[MATR_DIM][MATR_DIM];
 
 int main()
 {
-	int k,m, cps = 0;
+	int k,m, cps = CLOCKS_PER_SEC;
 	unsigned long i;
 	const quadfloat one = 1.000000000000000000000000000000000000000000;
 	//const quadfloat one = expq(0); /* Maybe this is closer, who knows :P */
@@ -64,7 +64,7 @@ int main()
 		a[i] = &big_unified[i * MATR_DIM];
 
 //	ifstream dat("geocart.txt");
-	ifstream dat("geomod-t.txt");
+	ifstream dat("geosphere.txt");
 	if (!dat.is_open())
 		return 1;
 
