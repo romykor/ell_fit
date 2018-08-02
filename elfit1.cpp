@@ -173,6 +173,10 @@ int main()
 	quadmath_snprintf(x_s, sizeof(x_s), "%.12Qe", s0);
 	res<<"\n\n A-posteriori error:  s0 = "<<setw(25)<<x_s<<endl;
 
+	free(tmp_qf[0]); free(tmp_qf[1]); free(tmp_qf[2]);
+	free(N); free(Niv); free(Vx);
+	free(d); free(r); free(a); free(big_unified);
+
 	return 0;
 }
 
