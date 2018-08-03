@@ -5,11 +5,11 @@ CFLAGS 	= -Wall
 
 LDFLAGS = -lm -lquadmath
 
-all: elfit
+all: elfit3q
 
-elfit: elfit1.cpp
+elfit: elfit3q.cpp
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(OPT3) -fopenmp $+ $(LDFLAGS) -o $@
 
 clean:
-	rm -rf elfit *.o *.out *.err *.prv *.pcf *.row *.sym
+	rm -rf elfit3q *.o *.out *.err *.prv *.pcf *.row *.sym
 
