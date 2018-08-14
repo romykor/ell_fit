@@ -11,7 +11,7 @@
 #endif
 
 #define MATR_DIM	9
-#define STR_SIZE	50
+#define STR_SIZE	40
 typedef __float128 quadfloat;
 
 // ---------------------------------------
@@ -115,19 +115,18 @@ void display_quad(quadfloat **x)
 
 	for (i = 0;i < n;i++) {
 	 	for (j = 0;j < n;j++) {
-			quadmath_snprintf(tmp_buff, sizeof(tmp_buff), "%.12Qe", x[i][j]);
-			//dot << setw(22) << x[i][j];
-			dot << tmp_buff << "\t";
+			quadmath_snprintf(tmp_buff, sizeof(tmp_buff), "%.20Qe", x[i][j]);
+			dot <<"   " << tmp_buff;
 		}
 		dot<<endl;
 	}
-
-	cout<<endl;
 }
 
 void cholesky_quad(quadfloat **a, quadfloat **b)
 {
     int i, j, n = MATR_DIM, k;
+ 	const quadfloat one = 1.0000000000000000000000000000;
+   
     quadfloat s;
     //quadfloat c[MATR_DIM][MATR_DIM], d[MATR_DIM][MATR_DIM], e[MATR_DIM][MATR_DIM];
     quadfloat **c, **d, **e;
@@ -163,7 +162,7 @@ void cholesky_quad(quadfloat **a, quadfloat **b)
 	}
 
 	for (i = 0; i < n; i++)
-		d[i][i] = 1. / c[i][i]; /* XXX Add 'one' here? */
+		d[i][i] = one / c[i][i]; 
 	for (i = 0; i < n - 1; i++)  {
 		for (j = i + 1; j < n; j++)  {
 			s = 0.;
@@ -199,6 +198,12 @@ void cholesky_quad(quadfloat **a, quadfloat **b)
 	}
 	dot << "\n Check!  A*B  (should be Unit matrix) \n";
 	display_quad(e);
+    
+    dot.close();
+
+    free(c); free(d); free(e);
+    free(tmp_qf[0]); free(tmp_qf[1]); free(tmp_qf[2]); 
+    
 }
 
 void scalma_quad(quadfloat x,quadfloat **a, quadfloat **b)
