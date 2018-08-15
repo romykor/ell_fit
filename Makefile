@@ -3,13 +3,13 @@ CC 		= g++
 OPT3 	= -O3
 CFLAGS 	= -Wall
 
-LDFLAGS = -lm
+LDFLAGS = -lm -lquadmath
 
-all: elfit_prep3
+all: elfit4q
 
-elfit: elfit_prep3.cpp
+elfit: elfit4q.cpp
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(OPT3) -fopenmp $+ $(LDFLAGS) -o $@
 
 clean:
-	rm -rf elfit_prep3 *.o *.out *.err *.prv *.pcf *.row *.sym
+	rm -rf elfit4q *.o *.out *.err *.prv *.pcf *.row *.sym
 

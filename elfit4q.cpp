@@ -2,7 +2,7 @@
  *  Fit an ellipsoid to geoid undulation data
  *  using a grid of EGM2008 values
  *
- *  V. 4  -  14  August  2018
+ *  V. 4  -  15  August  2018
  */
 
 #include "matfun-q.h"
@@ -12,7 +12,7 @@ using namespace std;
 int main()
 {
 	int k,m, cps =CLOCKS_PER_SEC;
-	unsigned long i,n;
+	unsigned long i,n,cn;
     double phi,lam, semi_a, finv, gristep,dC;
 	const quadfloat one = 1.0000000000000000000000000000;
 	//const quadfloat one = expq(0); /* Maybe this is closer, who knows :P */
@@ -89,7 +89,7 @@ int main()
 	// Phase 1B  -  Data input  -  Big simple loop
     
 	for (i = 1; i <= n; i++)   {
-		dat >>phi>>lam>> x_s >> y_s >> z_s;  //>> w_s;
+		dat >>cn>> x_s >> y_s >> z_s;  //>> w_s;
 		/* strtoflt128 converts string to __float128, see documentation of libquadmath */
 		x = strtoflt128(x_s, NULL);
 		y = strtoflt128(y_s, NULL);

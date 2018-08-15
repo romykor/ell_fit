@@ -1,7 +1,7 @@
 //
 // Data preparation for geoid fit
 //
-// 14-08-2018 - v. 3
+// 15-08-2018 - v. 3
 //
 
 #include <iostream>
@@ -37,13 +37,13 @@ void transf(long double *phi,long double *lam,long double *x,long double *y,long
 
 int main()
 {
-	long int i,j,k,m,sf,n,top;
+	long int i,j,k,m,sf,n,top,ilat,ilon;
     int cps=CLOCKS_PER_SEC;
 //	long double rmax=one*RAND_MAX;
-    string outfi;
+    string outf1,outf2,fil1,fil2;
 	long double f,sp,rp,Ne,h,R;
 	long double latstep,lonstep,rl,sp2;
-    long double nlat,nlon,cf;
+    long double nlat,nlon,cf,g1,g2;
     long double  *phi,*lam,*x,*y,*z;  //,*dell;   // Big arrays
 
 	clock_t t1, t2;
@@ -55,7 +55,7 @@ int main()
     cin>>finv;
     cout<<"\n Enter nominal latitude step (in degrees) : ";
     cin>>latstep;
-    cout<<"\n Enter random error of cartesian coordinates  (in m) : ";
+    cout<<"\n Enter random error of height  (in m) : ";
     cin>>dN;
  
     f=one/finv;
@@ -95,8 +95,12 @@ int main()
     n=2*(int)nf;
     nlon=720./n;
     for (i = 0 ; i < n ; i++)   {
-        phi[m]=sp2*(i%2);
-        lam[m]=0.5*nlon*i;
+        g1=sp2*(i%2);
+        ilat=(int)((g1+0.005)*100);
+        phi[m]=ilat/100.;
+        g2=0.5*nlon*i;
+        ilon=(int)((g2+0.005)*100);
+        lam[m]=ilon/100.;
         m++;
         if (phi[m-1]!=0.0)  {
             phi[m]=-phi[m-1];
@@ -112,8 +116,12 @@ int main()
         n=2*(int)(nf*cf);
         lonstep=720./n;
         for (i = 0 ; i < n ; i++)   {
-            phi[m]=nlat + sp2*(i%2);
-            lam[m]=0.5*lonstep*i;
+            g1=nlat+sp2*(i%2);
+            ilat=(int)((g1+0.005)*100);
+            phi[m]=ilat/100.;
+            g2=0.5*lonstep*i;
+            ilon=(int)((g2+0.005)*100);
+            lam[m]=ilon/100.;
             m++;
             phi[m]=-phi[m-1];
             lam[m]=lam[m-1];
@@ -133,21 +141,38 @@ int main()
 //     transf(phi,lam,x,y,z,dell,m);
      transf(phi,lam,x,y,z,m);
      
-    //  Write output file
+    //  Write output files
     
-     cout<<"\n Enter output file name (with extension) : ";
-     cin>>outfi;
-     ofstream res(outfi);
+	 i=latstep*1000;
+	 fil1=std::to_string(i);
+	 i=dN*1000;
+	 fil2=std::to_string(i);	
+
+	 outf1  = "ell2-"  + fil1 + "-R-" + fil2 + "-geod.txt";
+	 outf2  = "ell2-"  + fil1 + "-R-" + fil2 + "-cart.txt";
+
+     ofstream res(outf1);
+     if (!res.is_open())    return 1;  
+     
+     res<<fixed<<"  "<<m<<setprecision(4)<<endl;
+     for (i = 0 ; i < m ; i++) 
+         res<<endl<<setw(9)<<i<<setw(12)<<phi[i]<<setw(13)<<lam[i];  
+     
+     res.close();
+     
+     res.open(outf2);
+     if (!res.is_open())    return 2;  
+     
      res<<fixed<<"  "<<m;
 	 res<<scientific<<setprecision(16)<<endl;
      for (i = 0 ; i < m ; i++) 
-         res<<endl<<setw(26)<<phi[i]<<setw(26)<<lam[i]<<setw(26)<<x[i]<<setw(26)<<y[i]<<setw(26)<<z[i];  //<<setw(26)<<dell[i];
+         res<<endl<<setw(9)<<i<<setw(26)<<x[i]<<setw(26)<<y[i]<<setw(26)<<z[i]; 
   
     res<<endl<<"\n     a = "<<a;
     res<<endl<<"\n finv = "<<finv;
     res<<endl<<"\n Step = "<<latstep;
-    res<<endl<<"\n SDev = "<<dN<<" (Random error of cartesian coordinates, in m) \n";
-    res<<"\n Max total points = "<<top<<endl;
+    res<<endl<<"\n SDev = "<<dN<<" (Random error of height, in m) \n";
+//    res<<"\n Max total points = "<<top<<endl;
     
     t2=clock()-t1;
     
@@ -163,23 +188,18 @@ int main()
 //void transf(long double *phi,long double *lam,long double *x,long double *y,long double *z,long double *dell,long int m)
 void transf(long double *phi,long double *lam,long double *x,long double *y,long double *z,long int m)
 {
-    long double d1,d2,cf,dc;
+    long double d1,d2,cf,h;
     long int i;
     long double rmax=one*RAND_MAX;
 
-    for (i=0;i<m;i++)  {
+    for (i=0;i<m;i++)   {
         d1=sin(d2r*phi[i]);
         cf=sqrt(one-e2*d1*d1);
         d2=cos(d2r*phi[i]);
-        x[i]=(a/cf)*d2*cos(d2r*lam[i]);
-        dc=(-0.50+rand()/rmax)*dN;
-        x[i]=x[i]+dc;
-        y[i]=(a/cf)*d2*sin(d2r*lam[i]);
-        dc=(-0.50+rand()/rmax)*dN;
-        y[i]=y[i]+dc;
-        z[i]=(a/cf)*me2*d1;
-        dc=(-0.50+rand()/rmax)*dN;
-        z[i]=z[i]+dc;
+        h=(-0.50+rand()/rmax)*dN;
+        x[i]=(a/cf+h)*d2*cos(d2r*lam[i]);
+        y[i]=(a/cf+h)*d2*sin(d2r*lam[i]);
+        z[i]=(a/cf+h)*me2*d1;
  /*        
         d1=x[i]/a;
         d1=d1*d1;
