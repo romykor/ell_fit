@@ -2,7 +2,7 @@
  *  Fit an ellipsoid to geoid undulation data
  *  using a grid of EGM2008 values
  *
- *  V. 4  -  15  August  2018
+ *  V. 4  -  20  August  2018
  */
 
 #include "matfun-q.h"
@@ -47,7 +47,16 @@ int main()
 //	memset(w_s, 0, STR_SIZE * sizeof(char));
 
     double cof[9];
-	cof[0] = pow(10., -11);
+    int cpo[9];cof[0] = pow(10., -11);
+    
+    ifstream dac("scalc.txt");
+    
+    for (i = 0; i<9 ; i++)  {
+        dac>>cpo[i];
+        cof[i] = pow(10.,cpo[i]);
+    }
+    
+/*	
 	cof[1] = pow(10., -11);
 	cof[2] = pow(10., -11);
 	cof[3] = pow(10., -11);
@@ -56,6 +65,7 @@ int main()
 	cof[6] = pow(10., -6);
 	cof[7] = pow(10., -6);
 	cof[8] = pow(10., 0);
+*/
 
     //  Define file names
     
